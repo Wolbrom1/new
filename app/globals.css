@@ -164,7 +164,206 @@
 }
 
 /* ==========================================================================
-   Fifthseason spinner system
+   Fifthseason liquid loaders (v2)
+   Runtime for components/fifthseason/liquid.tsx. Apple-style materials —
+   translucency, refraction, specular light, physical easing.
+   ========================================================================== */
+
+:root {
+    /* The single accent. Swap for the brand colour. */
+    --accent: #7b5ea7;
+    --glass: rgba(255, 255, 255, 0.55);
+    --glass-hi: rgba(255, 255, 255, 0.9);
+    --hairline: rgba(0, 0, 0, 0.1);
+}
+
+.dark {
+    --accent: #a78be0;
+    --glass: rgba(255, 255, 255, 0.06);
+    --glass-hi: rgba(255, 255, 255, 0.16);
+    --hairline: rgba(255, 255, 255, 0.12);
+}
+
+.fsx {
+    position: relative;
+    width: var(--fsx-size, 64px);
+    height: var(--fsx-size, 64px);
+    flex: none;
+    color: var(--fsx-color, currentColor);
+}
+.fsx-svg {
+    display: block;
+    width: var(--fsx-size, 64px);
+    height: var(--fsx-size, 64px);
+    flex: none;
+    color: var(--fsx-color, currentColor);
+    overflow: visible;
+}
+
+@keyframes fsx-rot {
+    to { transform: rotate(360deg); }
+}
+@keyframes fsx-drop {
+    0%, 100% { transform: translateY(0) scale(.5); }
+    46%      { transform: translateY(-15.5px) scale(1); }
+}
+@keyframes fsx-wave {
+    to { transform: translateX(-24px); }
+}
+@keyframes fsx-level {
+    0%, 100% { transform: translateY(25px); }
+    50%      { transform: translateY(2px); }
+}
+/* The band's bright core sits 26px behind the sweep rect's leading edge, so
+   the travel is framed to carry that core from just before the mark to just
+   past it. A wider range only buys dead frames where the loader looks
+   stopped. */
+@keyframes fsx-sweep {
+    0%        { transform: translateX(14px); }
+    80%, 100% { transform: translateX(82px); }
+}
+@keyframes fsx-breathe {
+    0%, 100% { opacity: .16; }
+    50%      { opacity: .34; }
+}
+@keyframes fsx-lenspulse {
+    0%, 100% { transform: translateX(-50%) scale(1); }
+    50%      { transform: translateX(-50%) scale(1.12); }
+}
+@keyframes fsx-fade {
+    0%, 100% { opacity: .35; }
+    50%      { opacity: 1; }
+}
+
+/* 01 — Halo */
+.fsx-halo__glass,
+.fsx-halo__sweep {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - 14%), #000 calc(100% - 14%));
+    mask: radial-gradient(farthest-side, #0000 calc(100% - 14%), #000 calc(100% - 14%));
+}
+.fsx-halo__glass {
+    background: var(--glass);
+    -webkit-backdrop-filter: blur(6px) saturate(180%);
+    backdrop-filter: blur(6px) saturate(180%);
+    box-shadow:
+        inset 0 0 0 0.5px var(--glass-hi),
+        0 4px 14px -4px rgba(0, 0, 0, 0.28);
+}
+.fsx-halo__sweep {
+    background: conic-gradient(
+        from 0deg,
+        #0000 0turn,
+        #0000 0.42turn,
+        color-mix(in srgb, var(--accent) 55%, transparent) 0.82turn,
+        var(--accent) 0.97turn,
+        #0000 1turn
+    );
+    animation: fsx-rot calc(1.5s / var(--fsx-speed, 1))
+        cubic-bezier(0.55, 0.08, 0.42, 0.96) infinite;
+}
+.fsx-halo__sweep::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 14%;
+    height: 14%;
+    transform: translate(-50%, 0);
+    border-radius: 50%;
+    background: var(--glass-hi);
+    box-shadow: 0 0 8px 1px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+
+/* 02 — Mercury */
+.fsx-merc__rotor {
+    transform-origin: 24px 24px;
+    animation: fsx-rot calc(6s / var(--fsx-speed, 1)) linear infinite;
+}
+.fsx-merc__drop {
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+    animation: fsx-drop calc(2.1s / var(--fsx-speed, 1))
+        cubic-bezier(0.45, 0, 0.25, 1) infinite;
+}
+
+/* 03 — Tide */
+.fsx-tide__vessel { opacity: 0.16; }
+.fsx-tide__level {
+    animation: fsx-level calc(4.2s / var(--fsx-speed, 1)) ease-in-out infinite;
+}
+.fsx-tide__wave {
+    animation: fsx-wave calc(2.4s / var(--fsx-speed, 1)) linear infinite;
+}
+.fsx-tide__wave--back {
+    opacity: 0.4;
+    animation-duration: calc(3.6s / var(--fsx-speed, 1));
+    animation-direction: reverse;
+}
+
+/* 04 — Lens */
+.fsx-lens__track {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1.5px var(--hairline);
+}
+.fsx-lens__arm {
+    position: absolute;
+    inset: 0;
+    animation: fsx-rot calc(1.9s / var(--fsx-speed, 1))
+        cubic-bezier(0.5, 0.05, 0.3, 1) infinite;
+}
+.fsx-lens__pill {
+    position: absolute;
+    top: -6%;
+    left: 50%;
+    width: 38%;
+    height: 30%;
+    border-radius: 999px;
+    background: var(--glass);
+    -webkit-backdrop-filter: blur(3px) saturate(220%) brightness(1.08);
+    backdrop-filter: blur(3px) saturate(220%) brightness(1.08);
+    box-shadow:
+        inset 0 0 0 0.5px var(--glass-hi),
+        inset 0 1px 1px var(--glass-hi),
+        0 3px 10px -2px rgba(0, 0, 0, 0.35);
+    animation: fsx-lenspulse calc(1.9s / var(--fsx-speed, 1)) ease-in-out infinite;
+}
+
+/* 05 — Facet */
+.fsx-facet__base {
+    animation: fsx-breathe calc(3s / var(--fsx-speed, 1)) ease-in-out infinite;
+}
+.fsx-facet__sweep {
+    animation: fsx-sweep calc(2.3s / var(--fsx-speed, 1))
+        cubic-bezier(0.35, 0.05, 0.45, 0.95) infinite;
+}
+
+/* Motion is the signal, so it is softened rather than removed. */
+@media (prefers-reduced-motion: reduce) {
+    .fsx-halo__sweep,
+    .fsx-merc__rotor,
+    .fsx-merc__drop,
+    .fsx-tide__level,
+    .fsx-tide__wave,
+    .fsx-lens__arm,
+    .fsx-lens__pill,
+    .fsx-facet__sweep,
+    .fsx-facet__base {
+        animation: fsx-fade calc(2.4s / var(--fsx-speed, 1)) ease-in-out
+            infinite !important;
+        animation-delay: 0s !important;
+        transform: none !important;
+    }
+    .fsx-lens__pill { transform: translateX(-50%) !important; }
+    .fsx-merc__drop { transform: translateY(-15.5px) !important; }
+}
+
+/* ==========================================================================
+   Fifthseason spinner system (v1)
    Runtime for components/fifthseason/spinners.tsx. Pure CSS, no JS.
    ========================================================================== */
 
