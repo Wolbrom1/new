@@ -164,6 +164,197 @@
 }
 
 /* ==========================================================================
+   Fifth Season motion
+   Runtime for components/fifthseason/logo-loaders.tsx (continuous) and
+   logo-openings.tsx (one-shot). Pure CSS, no JS, no animation library.
+   ========================================================================== */
+
+.fsl {
+    display: block;
+    width: var(--fsl-size, 88px);
+    height: var(--fsl-size, 88px);
+    overflow: visible;
+}
+.fsw {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+/* ---- Loaders ---- */
+
+@keyframes fs-cell {
+    0%, 100% { opacity: .22; transform: scale(.86); }
+    45%      { opacity: 1;   transform: scale(1); }
+}
+@keyframes fs-turn { to { transform: rotate(360deg); } }
+@keyframes fs-in-tl { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(26px, 26px); } }
+@keyframes fs-in-tr { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-26px, 26px); } }
+@keyframes fs-in-br { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-26px, -26px); } }
+@keyframes fs-in-bl { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(26px, -26px); } }
+@keyframes fs-star-swell {
+    0%, 100% { transform: scale(.9);  opacity: .55; }
+    50%      { transform: scale(1.1); opacity: 1; }
+}
+@keyframes fs-wave { to { transform: translateX(-220px); } }
+@keyframes fs-level {
+    0%, 100% { transform: translateY(300px); }
+    50%      { transform: translateY(20px); }
+}
+@keyframes fs-prism {
+    0%        { transform: rotate(-38deg) translateX(0); }
+    72%, 100% { transform: rotate(-38deg) translateX(1000px); }
+}
+@keyframes fs-soft { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
+
+/* 01 Quadrant */
+.q-cell {
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+    animation: fs-cell calc(1.9s / var(--fsl-speed, 1)) cubic-bezier(.4, 0, .3, 1) infinite;
+}
+.fsl-quadrant .fs-tl   { animation-delay: 0s; }
+.fsl-quadrant .fs-tr   { animation-delay: calc(-1.52s / var(--fsl-speed, 1)); }
+.fsl-quadrant .fs-br   { animation-delay: calc(-1.14s / var(--fsl-speed, 1)); }
+.fsl-quadrant .fs-bl   { animation-delay: calc(-0.76s / var(--fsl-speed, 1)); }
+.fsl-quadrant .fs-star { animation-delay: calc(-0.38s / var(--fsl-speed, 1)); }
+
+/* 02 Aurora */
+.a-rotor {
+    transform-origin: 221.2px 221.2px;
+    animation: fs-turn calc(5.2s / var(--fsl-speed, 1)) linear infinite;
+}
+
+/* 03 Converge */
+.c-in {
+    animation-duration: calc(2.6s / var(--fsl-speed, 1));
+    animation-timing-function: cubic-bezier(.45, 0, .35, 1);
+    animation-iteration-count: infinite;
+}
+.c-tl { animation-name: fs-in-tl; }
+.c-tr { animation-name: fs-in-tr; }
+.c-br { animation-name: fs-in-br; }
+.c-bl { animation-name: fs-in-bl; }
+.c-star {
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+    animation: fs-star-swell calc(2.6s / var(--fsl-speed, 1)) cubic-bezier(.45, 0, .35, 1) infinite;
+}
+
+/* 04 Tide */
+.t-level { animation: fs-level calc(5s / var(--fsl-speed, 1)) ease-in-out infinite; }
+.t-wave  { animation: fs-wave calc(2.6s / var(--fsl-speed, 1)) linear infinite; }
+.t-wave--back {
+    animation-duration: calc(4s / var(--fsl-speed, 1));
+    animation-direction: reverse;
+}
+
+/* 05 Prism */
+.p-sweep {
+    transform-origin: 221px 221px;
+    animation: fs-prism calc(2.6s / var(--fsl-speed, 1)) cubic-bezier(.4, .05, .45, .95) infinite;
+}
+
+/* ---- Openings (one-shot) ---- */
+
+.fsw-word path { opacity: 0; }
+
+@keyframes as-tl   { from { transform: translate(-150px, -150px) scale(.4); opacity: 0; } }
+@keyframes as-tr   { from { transform: translate(150px, -150px) scale(.4);  opacity: 0; } }
+@keyframes as-br   { from { transform: translate(150px, 150px) scale(.4);   opacity: 0; } }
+@keyframes as-bl   { from { transform: translate(-150px, 150px) scale(.4);  opacity: 0; } }
+@keyframes as-star { from { transform: scale(0); opacity: 0; } }
+@keyframes word-up {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes ir-open   { from { transform: scale(0); opacity: 0; } }
+@keyframes ir-letter {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes sw-band {
+    0%   { transform: rotate(-38deg) translateX(0); }
+    100% { transform: rotate(-38deg) translateX(1000px); }
+}
+@keyframes sw-reveal { from { opacity: 0; }   to { opacity: 1; } }
+@keyframes sw-fade   { from { opacity: .16; } to { opacity: 0; } }
+@keyframes un-turn   { from { transform: rotate(-90deg) scale(.55); opacity: 0; } }
+@keyframes ri-rise   { from { transform: translateY(460px); } to { transform: translateY(0); } }
+
+.as-cell { transform-box: fill-box; transform-origin: 50% 50%; }
+.as .fs-tl   { animation: as-tl   .85s cubic-bezier(.2, 1.3, .4, 1) both; }
+.as .fs-tr   { animation: as-tr   .85s cubic-bezier(.2, 1.3, .4, 1) both .08s; }
+.as .fs-br   { animation: as-br   .85s cubic-bezier(.2, 1.3, .4, 1) both .16s; }
+.as .fs-bl   { animation: as-bl   .85s cubic-bezier(.2, 1.3, .4, 1) both .24s; }
+.as .fs-star { animation: as-star .7s  cubic-bezier(.2, 1.5, .4, 1) both .42s; }
+.as-word { animation: word-up .7s cubic-bezier(.25, .9, .3, 1) both .6s; }
+.as-word path { opacity: 1; }
+
+.ir-cell { transform-box: fill-box; transform-origin: 50% 50%; }
+.ir { transform-origin: 221.2px 221.2px; }
+.ir .fs-star { animation: ir-open .6s cubic-bezier(.2, 1.2, .4, 1) both; }
+.ir .fs-tl   { animation: ir-open .7s cubic-bezier(.2, 1.2, .4, 1) both .12s; }
+.ir .fs-tr   { animation: ir-open .7s cubic-bezier(.2, 1.2, .4, 1) both .2s; }
+.ir .fs-br   { animation: ir-open .7s cubic-bezier(.2, 1.2, .4, 1) both .28s; }
+.ir .fs-bl   { animation: ir-open .7s cubic-bezier(.2, 1.2, .4, 1) both .36s; }
+.ir-l {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: ir-letter .5s cubic-bezier(.25, .9, .3, 1) both;
+    animation-delay: calc(.55s + var(--i) * .055s);
+}
+
+.sw-grey   { animation: sw-fade 1.1s ease-out both .25s; }
+.sw-colour { animation: sw-reveal 1.1s ease-out both .25s; }
+.sw-band {
+    transform-origin: 221px 221px;
+    animation: sw-band 1.35s cubic-bezier(.35, .1, .4, .95) both .1s;
+}
+.sw-word { animation: word-up .8s cubic-bezier(.25, .9, .3, 1) both .75s; }
+.sw-word path { opacity: 1; }
+
+.un {
+    transform-origin: 221.2px 221.2px;
+    animation: un-turn 1s cubic-bezier(.18, 1.25, .35, 1) both;
+}
+.un-word { animation: word-up .7s cubic-bezier(.25, .9, .3, 1) both .55s; }
+.un-word path { opacity: 1; }
+
+.ri-level { animation: ri-rise 1.5s cubic-bezier(.3, .75, .25, 1) both .15s; }
+.ri-word  { animation: word-up .9s cubic-bezier(.25, .9, .3, 1) both 1.15s; }
+.ri-word path { opacity: 1; }
+
+/* Loaders soften to a fade; openings resolve straight to their finished
+   state. Transforms are never blanket-reset here — the lockup positions its
+   mark with a transform attribute that must survive. */
+@media (prefers-reduced-motion: reduce) {
+    .fsl .q-cell,
+    .fsl .c-in,
+    .fsl .c-star,
+    .fsl .a-rotor {
+        animation: fs-soft calc(2.4s / var(--fsl-speed, 1)) ease-in-out infinite !important;
+        animation-delay: 0s !important;
+        transform: none !important;
+    }
+    .fsl .t-level,
+    .fsl .t-wave { animation: none !important; transform: none !important; }
+    .fsl-tide g[mask] {
+        animation: fs-soft calc(2.4s / var(--fsl-speed, 1)) ease-in-out infinite !important;
+    }
+    .fsl .p-sweep { display: none !important; }
+    .fsl-prism .fs-star {
+        animation: fs-soft calc(2.4s / var(--fsl-speed, 1)) ease-in-out infinite !important;
+    }
+
+    .fsw,
+    .fsw * { animation: none !important; }
+    .fsw path { opacity: 1 !important; }
+    .fsw .sw-grey,
+    .fsw .sw-band { display: none !important; }
+}
+
+/* ==========================================================================
    Fifthseason liquid loaders (v2)
    Runtime for components/fifthseason/liquid.tsx. Apple-style materials —
    translucency, refraction, specular light, physical easing.
