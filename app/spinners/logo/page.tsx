@@ -5,9 +5,12 @@ import { useState } from 'react';
 import { BRAND, FifthSeasonLockup } from '@/components/fifthseason/brand';
 import {
   Aurora,
+  Compass,
   Converge,
+  Flip,
   Prism,
   Quadrant,
+  Tandem,
   Tide,
 } from '@/components/fifthseason/logo-loaders';
 import {
@@ -17,6 +20,10 @@ import {
   Sweep,
   Unfold,
 } from '@/components/fifthseason/logo-openings';
+import {
+  VoiceMark,
+  type VoiceState,
+} from '@/components/fifthseason/voice-mark';
 
 const LOADERS = [
   {
@@ -44,10 +51,27 @@ const LOADERS = [
     note: 'Stays legible. Headers and inline.',
     node: <Prism size={88} />,
   },
+  {
+    name: 'Flip',
+    note: 'New. Each circle turns over like a card.',
+    node: <Flip size={88} />,
+  },
+  {
+    name: 'Tandem',
+    note: 'New. The diagonals trade places.',
+    node: <Tandem size={88} />,
+  },
+  {
+    name: 'Compass',
+    note: 'New. The star ticks round; the circles recoil.',
+    node: <Compass size={88} />,
+  },
 ];
 
 export default function LogoMotionPage() {
   const [replay, setReplay] = useState(0);
+  const [voice, setVoice] = useState<VoiceState>('listening');
+  const [level, setLevel] = useState(0.4);
 
   const openings = [
     {
@@ -140,6 +164,45 @@ export default function LogoMotionPage() {
               <p className="mt-1 text-sm text-muted-foreground">{o.note}</p>
             </div>
           ))}
+        </div>
+
+        <h2 className="mt-14 text-xs uppercase tracking-widest text-muted-foreground">
+          Voice — one state each
+        </h2>
+        <div className="mt-4 flex flex-col items-center gap-6 rounded-2xl border p-10 sm:flex-row">
+          <VoiceMark state={voice} level={level} size={200} />
+          <div className="flex flex-col gap-4">
+            <div className="flex gap-2">
+              {(['listening', 'thinking', 'speaking'] as const).map((v) => (
+                <button
+                  key={v}
+                  type="button"
+                  onClick={() => setVoice(v)}
+                  className={`rounded-full border px-4 py-1 text-sm capitalize ${
+                    voice === v ? 'bg-foreground text-background' : ''
+                  }`}
+                >
+                  {v}
+                </button>
+              ))}
+            </div>
+            <label className="flex items-center gap-3 text-sm text-muted-foreground">
+              Audio level
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.01}
+                value={level}
+                onChange={(e) => setLevel(Number(e.target.value))}
+              />
+            </label>
+            <p className="max-w-sm text-sm text-muted-foreground">
+              Lottie files in /brand/lottie, GIFs in /brand/gif. Wire{' '}
+              <code className="font-mono">level</code> to the mic or TTS output
+              and the mark answers the real voice.
+            </p>
+          </div>
         </div>
       </div>
     </main>

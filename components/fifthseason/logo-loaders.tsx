@@ -205,3 +205,64 @@ export function Prism(props: LogoLoaderProps) {
     </svg>
   );
 }
+
+/* ------------------------------------------------------------------ *
+ * 06 — Flip
+ * Each circle turns over like a card, clockwise from the green, and
+ * lands face-up again before the next one goes. 24px and up.
+ * ------------------------------------------------------------------ */
+
+export function Flip(props: LogoLoaderProps) {
+  const uid = useSvgId();
+  return (
+    <svg {...shell(props, 'fsl-flip')}>
+      <defs>
+        <MarkGradients uid={uid} />
+      </defs>
+      <MarkShapes uid={uid} cellClassName="f-cell" />
+    </svg>
+  );
+}
+
+/* ------------------------------------------------------------------ *
+ * 07 — Tandem
+ * The diagonals trade places: green and orange swell while violet and
+ * indigo give way, then the other way round. A heartbeat across the
+ * mark. 24px and up.
+ * ------------------------------------------------------------------ */
+
+export function Tandem(props: LogoLoaderProps) {
+  const uid = useSvgId();
+  return (
+    <svg {...shell(props, 'fsl-tandem')}>
+      <defs>
+        <MarkGradients uid={uid} />
+      </defs>
+      <MarkShapes uid={uid} cellClassName="td-cell" />
+    </svg>
+  );
+}
+
+/* ------------------------------------------------------------------ *
+ * 08 — Compass
+ * The centre star ticks round a quarter-turn per beat, shrinking at the
+ * half-way point so its arms clear the circles, and the four recoil
+ * outward on every tick. Four ticks per loop so the star's gradient
+ * comes home. 32px and up.
+ * ------------------------------------------------------------------ */
+
+export function Compass(props: LogoLoaderProps) {
+  const uid = useSvgId();
+  return (
+    <svg {...shell(props, 'fsl-compass')}>
+      <defs>
+        <MarkGradients uid={uid} />
+      </defs>
+      <path className="cp-in cp-tl" d={MARK.tl} fill={`url(#${uid}-tl)`} />
+      <path className="cp-in cp-tr" d={MARK.tr} fill={`url(#${uid}-tr)`} />
+      <path className="cp-in cp-br" d={MARK.br} fill={`url(#${uid}-br)`} />
+      <path className="cp-in cp-bl" d={MARK.bl} fill={`url(#${uid}-bl)`} />
+      <path className="cp-star" d={MARK.star} fill={`url(#${uid}-star)`} />
+    </svg>
+  );
+}

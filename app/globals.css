@@ -255,6 +255,69 @@
     animation: fs-prism calc(2.6s / var(--fsl-speed, 1)) cubic-bezier(.4, .05, .45, .95) infinite;
 }
 
+/* 06 Flip */
+@keyframes fs-flip {
+    0%, 34%, 100% { transform: scaleX(1); }
+    17%           { transform: scaleX(.04); }
+}
+.f-cell {
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+    animation: fs-flip calc(2.4s / var(--fsl-speed, 1)) cubic-bezier(.45, 0, .3, 1) infinite;
+}
+.fsl-flip .fs-tr   { animation-delay: calc(.4s / var(--fsl-speed, 1)); }
+.fsl-flip .fs-br   { animation-delay: calc(.8s / var(--fsl-speed, 1)); }
+.fsl-flip .fs-bl   { animation-delay: calc(1.2s / var(--fsl-speed, 1)); }
+.fsl-flip .fs-star { animation: none; }
+
+/* 07 Tandem */
+@keyframes fs-tandem {
+    0%, 100% { transform: scale(1.06); opacity: 1; }
+    50%      { transform: scale(.8);   opacity: .55; }
+}
+@keyframes fs-tandem-star {
+    0%, 50%, 100% { transform: scale(1); }
+    25%, 75%      { transform: scale(.86); }
+}
+.td-cell {
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+    animation: fs-tandem calc(1.8s / var(--fsl-speed, 1)) cubic-bezier(.45, 0, .35, 1) infinite;
+}
+.fsl-tandem .fs-tr,
+.fsl-tandem .fs-bl { animation-delay: calc(-.9s / var(--fsl-speed, 1)); }
+.fsl-tandem .fs-star { animation-name: fs-tandem-star; }
+
+/* 08 Compass */
+@keyframes fs-compass {
+    0%    { transform: rotate(0deg)   scale(1); }
+    12.5% { transform: rotate(45deg)  scale(.7); }
+    25%   { transform: rotate(90deg)  scale(1); }
+    37.5% { transform: rotate(135deg) scale(.7); }
+    50%   { transform: rotate(180deg) scale(1); }
+    62.5% { transform: rotate(225deg) scale(.7); }
+    75%   { transform: rotate(270deg) scale(1); }
+    87.5% { transform: rotate(315deg) scale(.7); }
+    100%  { transform: rotate(360deg) scale(1); }
+}
+@keyframes fs-recoil-tl { 0%, 20%, 100% { transform: translate(0, 0); } 6% { transform: translate(-10px, -10px); } }
+@keyframes fs-recoil-tr { 0%, 20%, 100% { transform: translate(0, 0); } 6% { transform: translate(10px, -10px); } }
+@keyframes fs-recoil-br { 0%, 20%, 100% { transform: translate(0, 0); } 6% { transform: translate(10px, 10px); } }
+@keyframes fs-recoil-bl { 0%, 20%, 100% { transform: translate(0, 0); } 6% { transform: translate(-10px, 10px); } }
+.cp-star {
+    transform-origin: 221.2px 221.2px;
+    animation: fs-compass calc(3.6s / var(--fsl-speed, 1)) cubic-bezier(.5, -.4, .3, 1.5) infinite;
+}
+.cp-in {
+    animation-duration: calc(.9s / var(--fsl-speed, 1));
+    animation-timing-function: cubic-bezier(.3, 0, .3, 1);
+    animation-iteration-count: infinite;
+}
+.cp-tl { animation-name: fs-recoil-tl; }
+.cp-tr { animation-name: fs-recoil-tr; }
+.cp-br { animation-name: fs-recoil-br; }
+.cp-bl { animation-name: fs-recoil-bl; }
+
 /* ---- Openings (one-shot) ---- */
 
 .fsw-word path { opacity: 0; }
@@ -330,6 +393,10 @@
    mark with a transform attribute that must survive. */
 @media (prefers-reduced-motion: reduce) {
     .fsl .q-cell,
+    .fsl .f-cell,
+    .fsl .td-cell,
+    .fsl .cp-in,
+    .fsl .cp-star,
     .fsl .c-in,
     .fsl .c-star,
     .fsl .a-rotor {
