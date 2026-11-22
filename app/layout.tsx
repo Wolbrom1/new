@@ -2,6 +2,7 @@ import { Toaster } from 'sonner';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
+import { LottieState, MarkSpinner } from '@/components/fifthseason/states';
 
 import './globals.css';
 
@@ -76,7 +77,14 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Toaster position="top-center" />
+          <Toaster
+            position="top-center"
+            icons={{
+              success: <LottieState name="success" loop={false} size={20} />,
+              error: <LottieState name="error" loop={false} size={20} />,
+              loading: <MarkSpinner size={16} label={null} />,
+            }}
+          />
           {children}
         </ThemeProvider>
       </body>
