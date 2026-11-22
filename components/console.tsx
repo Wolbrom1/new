@@ -1,4 +1,4 @@
-import { TerminalWindowIcon, LoaderIcon, CrossSmallIcon } from './icons';
+import { TerminalWindowIcon, CrossSmallIcon } from './icons';
 import { Button } from './ui/button';
 import {
   Dispatch,
@@ -10,6 +10,7 @@ import {
 } from 'react';
 import { cn } from '@/lib/utils';
 import { useArtifactSelector } from '@/hooks/use-artifact';
+import { MarkSpinner } from '@/components/fifthseason/states';
 
 export interface ConsoleOutputContent {
   type: 'text' | 'image';
@@ -134,8 +135,8 @@ export function Console({ consoleOutputs, setConsoleOutputs }: ConsoleProps) {
                 consoleOutput.status,
               ) ? (
                 <div className="flex flex-row gap-2">
-                  <div className="animate-spin size-fit self-center mb-auto mt-0.5">
-                    <LoaderIcon />
+                  <div className="size-fit self-center mb-auto mt-0.5">
+                    <MarkSpinner size={16} />
                   </div>
                   <div className="text-muted-foreground">
                     {consoleOutput.status === 'in_progress'

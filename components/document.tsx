@@ -1,9 +1,10 @@
 import { memo } from 'react';
 
 import type { ArtifactKind } from './artifact';
-import { FileIcon, LoaderIcon, MessageIcon, PencilEditIcon } from './icons';
+import { FileIcon, MessageIcon, PencilEditIcon } from './icons';
 import { toast } from 'sonner';
 import { useArtifact } from '@/hooks/use-artifact';
+import { MarkSpinner } from '@/components/fifthseason/states';
 
 const getActionText = (
   type: 'create' | 'update' | 'request-suggestions',
@@ -143,7 +144,9 @@ function PureDocumentToolCall({
         </div>
       </div>
 
-      <div className="animate-spin mt-1">{<LoaderIcon />}</div>
+      <div className="mt-1">
+        <MarkSpinner size={16} />
+      </div>
     </button>
   );
 }

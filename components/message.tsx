@@ -19,6 +19,7 @@ import { MessageEditor } from './message-editor';
 import { DocumentPreview } from './document-preview';
 import { MessageReasoning } from './message-reasoning';
 import { UseChatHelpers } from '@ai-sdk/react';
+import { MarkSpinner, ThinkingIndicator } from './fifthseason/states';
 
 const PurePreviewMessage = ({
   chatId,
@@ -250,7 +251,7 @@ export const ThinkingMessage = () => {
       data-testid="message-assistant-loading"
       className="w-full mx-auto max-w-3xl px-4 group/message "
       initial={{ y: 5, opacity: 0 }}
-      animate={{ y: 0, opacity: 1, transition: { delay: 1 } }}
+      animate={{ y: 0, opacity: 1, transition: { delay: 0.15 } }}
       data-role={role}
     >
       <div
@@ -262,13 +263,11 @@ export const ThinkingMessage = () => {
         )}
       >
         <div className="size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border">
-          <SparklesIcon size={14} />
+          <MarkSpinner size={18} label={null} />
         </div>
 
-        <div className="flex flex-col gap-2 w-full">
-          <div className="flex flex-col gap-4 text-muted-foreground">
-            Hmm...
-          </div>
+        <div className="flex flex-col gap-2 w-full justify-center">
+          <ThinkingIndicator label="Thinking" mark={false} />
         </div>
       </div>
     </motion.div>

@@ -23,6 +23,9 @@ import { Textarea } from './ui/textarea';
 import { SuggestedActions } from './suggested-actions';
 import equal from 'fast-deep-equal';
 import type { UseChatHelpers } from '@ai-sdk/react';
+import { Mic } from 'lucide-react';
+import { useVoiceInput } from './fifthseason/use-voice-input';
+import { VoiceMark } from './fifthseason/voice-mark';
 
 function PureMultimodalInput({
   chatId,
@@ -179,6 +182,24 @@ function PureMultimodalInput({
     [setAttachments],
   );
 
+  // Dictation appends to whatever was already typed when the mic opened.
+  const dictationBase = useRef('');
+  const voice = useVoiceInput({
+    onTranscript: (text) =>
+      setInput(
+        dictationBase.current ? `${dictationBase.current} ${text}` : text,
+      ),
+  });
+  const { listening, stop: stopDictation } = voice;
+
+  useEffect(() => {
+    if (listening && status !== 'ready') stopDictation();
+  }, [listening, status, stopDictation]);
+
+  useEffect(() => {
+    if (voice.error) toast.error(voice.error);
+  }, [voice.error]);
+
   return (
     <div className="relative w-full flex flex-col gap-4">
       {messages.length === 0 &&
@@ -222,7 +243,7 @@ function PureMultimodalInput({
       <Textarea
         data-testid="multimodal-input"
         ref={textareaRef}
-        placeholder="Send a message..."
+        placeholder={voice.listening ? 'Listening…' : 'Send a message...'}
         value={input}
         onChange={handleInput}
         className={cx(
@@ -248,12 +269,40 @@ function PureMultimodalInput({
         }}
       />
 
-      <div className="absolute bottom-0 p-2 w-fit flex flex-row justify-start">
+      <div className="absolute bottom-0 p-2 w-fit flex flex-row justify-start gap-1">
         <AttachmentsButton fileInputRef={fileInputRef} status={status} />
+        {voice.supported && (
+          <Button
+            data-testid="mic-button"
+            type="button"
+            variant="ghost"
+            aria-pressed={voice.listening}
+            aria-label={
+              voice.listening ? 'Stop dictation' : 'Dictate a message'
+            }
+            disabled={status !== 'ready'}
+            className="rounded-md p-[7px] h-fit dark:border-zinc-700 hover:dark:bg-zinc-900 hover:bg-zinc-200"
+            onClick={(event) => {
+              event.preventDefault();
+              if (voice.listening) {
+                voice.stop();
+              } else {
+                dictationBase.current = input.trim();
+                voice.start();
+              }
+            }}
+          >
+            {voice.listening ? (
+              <VoiceMark state="listening" level={voice.level} size={26} />
+            ) : (
+              <Mic size={14} />
+            )}
+          </Button>
+        )}
       </div>
 
       <div className="absolute bottom-0 right-0 p-2 w-fit flex flex-row justify-end">
-        {status === 'submitted' ? (
+        {status === 'submitted' || status === 'streaming' ? (
           <StopButton stop={stop} setMessages={setMessages} />
         ) : (
           <SendButton

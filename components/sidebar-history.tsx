@@ -26,7 +26,7 @@ import type { Chat } from '@/lib/db/schema';
 import { fetcher } from '@/lib/utils';
 import { ChatItem } from './sidebar-history-item';
 import useSWRInfinite from 'swr/infinite';
-import { LoaderIcon } from './icons';
+import { MarkSpinner } from '@/components/fifthseason/states';
 
 type GroupedChats = {
   today: Chat[];
@@ -174,7 +174,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
                 className="rounded-md h-8 flex gap-2 px-2 items-center"
               >
                 <div
-                  className="h-4 rounded-md flex-1 max-w-[--skeleton-width] bg-sidebar-accent-foreground/10"
+                  className="fs-skeleton h-4 rounded-md flex-1 max-w-[--skeleton-width]"
                   style={
                     {
                       '--skeleton-width': `${item}%`,
@@ -334,8 +334,8 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
             </div>
           ) : (
             <div className="p-2 text-zinc-500 dark:text-zinc-400 flex flex-row gap-2 items-center mt-8">
-              <div className="animate-spin">
-                <LoaderIcon />
+              <div className="flex">
+                <MarkSpinner size={16} />
               </div>
               <div>Loading Chats...</div>
             </div>

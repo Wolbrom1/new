@@ -1,12 +1,14 @@
 'use client';
 
-import React, { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { toast as sonnerToast } from 'sonner';
-import { CheckCircleFillIcon, WarningIcon } from './icons';
+import { LottieState } from './fifthseason/states';
 
+// The brand's one-shot outcome animations: they play once as the toast
+// arrives and hold their final frame.
 const iconsByType: Record<'success' | 'error', ReactNode> = {
-  success: <CheckCircleFillIcon />,
-  error: <WarningIcon />,
+  success: <LottieState name="success" loop={false} size={22} />,
+  error: <LottieState name="error" loop={false} size={22} />,
 };
 
 export function toast(props: Omit<ToastProps, 'id'>) {
@@ -25,10 +27,7 @@ function Toast(props: ToastProps) {
         key={id}
         className="bg-zinc-100 p-3 rounded-lg w-full toast-mobile:w-fit flex flex-row gap-2 items-center"
       >
-        <div
-          data-type={type}
-          className="data-[type=error]:text-red-600 data-[type=success]:text-green-600"
-        >
+        <div data-type={type} className="shrink-0">
           {iconsByType[type]}
         </div>
         <div className="text-zinc-950 text-sm">{description}</div>

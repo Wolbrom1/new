@@ -1,6 +1,5 @@
 import type { Attachment } from 'ai';
-
-import { LoaderIcon } from './icons';
+import { MarkSpinner } from '@/components/fifthseason/states';
 
 export const PreviewAttachment = ({
   attachment,
@@ -34,9 +33,9 @@ export const PreviewAttachment = ({
         {isUploading && (
           <div
             data-testid="input-attachment-loader"
-            className="animate-spin absolute text-zinc-500"
+            className="absolute text-zinc-500"
           >
-            <LoaderIcon />
+            <MarkSpinner size={16} />
           </div>
         )}
       </div>

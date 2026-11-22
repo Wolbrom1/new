@@ -16,7 +16,10 @@
     "db:pull": "drizzle-kit pull",
     "db:check": "drizzle-kit check",
     "db:up": "drizzle-kit up",
-    "test": "export PLAYWRIGHT=True && pnpm exec playwright test"
+    "test": "export PLAYWRIGHT=True && pnpm exec playwright test",
+    "audit:surfaces": "node scripts/surface-audit.mjs",
+    "brand:lottie": "python3 -I scripts/fifthseason-lottie.py components/fifthseason/brand.tsx public/brand/lottie",
+    "test:browsers": "node scripts/browser-matrix.mjs"
   },
   "dependencies": {
     "@ai-sdk/react": "^1.2.8",
@@ -52,6 +55,7 @@
     "fast-deep-equal": "^3.1.3",
     "framer-motion": "^11.3.19",
     "geist": "^1.3.1",
+    "lottie-web": "5.12.2",
     "lucide-react": "^0.446.0",
     "nanoid": "^5.0.8",
     "next": "15.3.0-canary.31",
