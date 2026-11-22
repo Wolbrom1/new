@@ -12,7 +12,14 @@ import { useCallback, useEffect, useRef, useState } from 'react';
  *
  * Supported where the Web Speech API is (Chrome, Edge, Safari). Elsewhere
  * `supported` is false and the mic button should not render.
+ *
+ * Data handling: browsers implement speech recognition with their own cloud
+ * service — Chrome sends the audio to Google, Safari to Apple. Set
+ * NEXT_PUBLIC_FS_DICTATION=off to hide dictation where that is not
+ * acceptable. The level meter never leaves the device.
  */
+
+const DICTATION_ENABLED = process.env.NEXT_PUBLIC_FS_DICTATION !== 'off';
 
 type Recognition = {
   continuous: boolean;
@@ -57,7 +64,8 @@ export function useVoiceInput({
 
   useEffect(() => {
     setSupported(
-      Boolean(recognitionCtor()) &&
+      DICTATION_ENABLED &&
+        Boolean(recognitionCtor()) &&
         Boolean(navigator.mediaDevices?.getUserMedia),
     );
   }, []);
