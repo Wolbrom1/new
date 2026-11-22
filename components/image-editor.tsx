@@ -1,5 +1,5 @@
-import { LoaderIcon } from './icons';
 import cn from 'classnames';
+import { MarkSpinner } from '@/components/fifthseason/states';
 
 interface ImageEditorProps {
   title: string;
@@ -26,8 +26,8 @@ export function ImageEditor({
       {status === 'streaming' ? (
         <div className="flex flex-row gap-4 items-center">
           {!isInline && (
-            <div className="animate-spin">
-              <LoaderIcon />
+            <div className="flex">
+              <MarkSpinner size={16} />
             </div>
           )}
           <div>Generating Image...</div>

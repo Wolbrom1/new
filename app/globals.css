@@ -164,6 +164,90 @@
 }
 
 /* ==========================================================================
+   Fifth Season platform states
+   Runtime for components/fifthseason/states.tsx and the fs-skeleton class.
+   ========================================================================== */
+
+/* MarkSpinner — the four circles chase clockwise; the shape never moves. */
+@keyframes fs-ms {
+    0%, 100% { opacity: .25; transform: scale(.78); }
+    30%      { opacity: 1;   transform: scale(1); }
+}
+.ms-cell {
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+    animation: fs-ms 1.1s cubic-bezier(.4, 0, .3, 1) infinite;
+}
+.ms-2 { animation-delay: .275s; }
+.ms-3 { animation-delay: .55s; }
+.ms-4 { animation-delay: .825s; }
+
+/* Shimmer text — a band of the brand gradient runs through the label. */
+@keyframes fs-shimmer-text { to { background-position: -200% 0; } }
+.fs-shimmer-text {
+    color: hsl(var(--muted-foreground));
+    background: linear-gradient(
+        100deg,
+        hsl(var(--muted-foreground)) 35%,
+        #92D1A9 44%, #B27FD1 50%, #E48369 56%,
+        hsl(var(--muted-foreground)) 65%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: fs-shimmer-text 2.2s linear infinite;
+}
+
+/* Skeleton — a neutral block with a faint brand-tinted light passing over.
+   Swap for `animate-pulse bg-muted…` and the layout stays the same. */
+@keyframes fs-skeleton { to { background-position: -150% 0; } }
+.fs-skeleton {
+    background-color: hsl(var(--muted-foreground) / .14);
+    background-image: linear-gradient(
+        100deg,
+        transparent 30%,
+        rgb(178 127 209 / .16) 45%,
+        rgb(146 209 169 / .14) 55%,
+        transparent 70%
+    );
+    background-size: 250% 100%;
+    background-position: 150% 0;
+    animation: fs-skeleton 1.8s cubic-bezier(.4, 0, .3, 1) infinite;
+}
+.dark .fs-skeleton {
+    background-color: hsl(var(--muted-foreground) / .16);
+    background-image: linear-gradient(
+        100deg,
+        transparent 30%,
+        rgb(178 127 209 / .22) 45%,
+        rgb(146 209 169 / .16) 55%,
+        transparent 70%
+    );
+}
+
+/* ProgressBar */
+.fs-progress { background: hsl(var(--muted-foreground) / .15); }
+.fs-progress-fill,
+.fs-progress-run {
+    background: linear-gradient(90deg, #A0DC96, #6DA1CE, #6080CA, #B27FD1, #EE79BB, #F89A66);
+}
+.fs-progress-fill { background-size: 100% 100%; }
+@keyframes fs-progress-run {
+    0%   { left: -40%; }
+    100% { left: 100%; }
+}
+.fs-progress-run { animation: fs-progress-run 1.4s cubic-bezier(.45, 0, .3, 1) infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+    .ms-cell { animation: fs-soft 2.4s ease-in-out infinite; transform: none; }
+    .ms-2, .ms-3, .ms-4 { animation-delay: 0s; }
+    .fs-shimmer-text { animation: none; background-position: 0 0; }
+    .fs-skeleton { animation: fs-soft 2.4s ease-in-out infinite; background-image: none; }
+    .fs-progress-run { animation: none; left: 0; width: 100%; opacity: .5; }
+}
+
+/* ==========================================================================
    Fifth Season motion
    Runtime for components/fifthseason/logo-loaders.tsx (continuous) and
    logo-openings.tsx (one-shot). Pure CSS, no JS, no animation library.

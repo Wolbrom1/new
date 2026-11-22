@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDownIcon, LoaderIcon } from './icons';
+import { ChevronDownIcon } from './icons';
+import { ThinkingIndicator } from './fifthseason/states';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Markdown } from './markdown';
 
@@ -34,12 +35,7 @@ export function MessageReasoning({
   return (
     <div className="flex flex-col">
       {isLoading ? (
-        <div className="flex flex-row gap-2 items-center">
-          <div className="font-medium">Reasoning</div>
-          <div className="animate-spin">
-            <LoaderIcon />
-          </div>
-        </div>
+        <ThinkingIndicator label="Reasoning" />
       ) : (
         <div className="flex flex-row gap-2 items-center">
           <div className="font-medium">Reasoned for a few seconds</div>

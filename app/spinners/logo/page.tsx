@@ -21,6 +21,12 @@ import {
   Unfold,
 } from '@/components/fifthseason/logo-openings';
 import {
+  LottieState,
+  MarkSpinner,
+  ProgressBar,
+  ThinkingIndicator,
+} from '@/components/fifthseason/states';
+import {
   VoiceMark,
   type VoiceState,
 } from '@/components/fifthseason/voice-mark';
@@ -72,6 +78,8 @@ export default function LogoMotionPage() {
   const [replay, setReplay] = useState(0);
   const [voice, setVoice] = useState<VoiceState>('listening');
   const [level, setLevel] = useState(0.4);
+  const [outcome, setOutcome] = useState<'success' | 'error'>('success');
+  const [outcomeKey, setOutcomeKey] = useState(0);
 
   const openings = [
     {
@@ -202,6 +210,108 @@ export default function LogoMotionPage() {
               <code className="font-mono">level</code> to the mic or TTS output
               and the mark answers the real voice.
             </p>
+          </div>
+        </div>
+
+        <h2 className="mt-14 text-xs uppercase tracking-widest text-muted-foreground">
+          Lottie — the loaders as files
+        </h2>
+        <div className="mt-4 grid gap-4 sm:grid-cols-3">
+          {(['flip', 'tandem', 'compass'] as const).map((n) => (
+            <div
+              key={n}
+              className="flex flex-col items-center gap-3 rounded-2xl border p-8"
+            >
+              <LottieState name={n} size={120} label={`${n} loader`} />
+              <p className="font-semibold capitalize">{n}</p>
+            </div>
+          ))}
+        </div>
+
+        <h2 className="mt-14 text-xs uppercase tracking-widest text-muted-foreground">
+          Platform states — what the app now uses
+        </h2>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <div className="rounded-2xl border p-8">
+            <p className="font-semibold">MarkSpinner</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Replaces every grey spinner: buttons, uploads, rows, headers.
+            </p>
+            <div className="mt-6 flex items-center gap-6">
+              {[12, 16, 20, 28].map((n) => (
+                <MarkSpinner key={n} size={n} />
+              ))}
+              <span className="flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm text-primary-foreground">
+                Saving <MarkSpinner size={14} tone="mono" label={null} />
+              </span>
+            </div>
+          </div>
+          <div className="rounded-2xl border p-8">
+            <p className="font-semibold">ThinkingIndicator</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              One voice for “working on it” — replies, reasoning, tools.
+            </p>
+            <div className="mt-6 flex flex-col gap-3">
+              <ThinkingIndicator />
+              <ThinkingIndicator label="Reasoning" />
+              <ThinkingIndicator label="Searching the web" />
+            </div>
+          </div>
+          <div className="rounded-2xl border p-8">
+            <p className="font-semibold">Skeleton</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              A brand-tinted light passes over; swap one class for{' '}
+              <code className="font-mono">animate-pulse</code>.
+            </p>
+            <div className="mt-6 flex flex-col gap-2">
+              <div className="fs-skeleton h-5 w-1/2 rounded-md" />
+              <div className="fs-skeleton h-4 w-full rounded-md" />
+              <div className="fs-skeleton h-4 w-5/6 rounded-md" />
+              <div className="fs-skeleton h-4 w-2/3 rounded-md" />
+            </div>
+          </div>
+          <div className="rounded-2xl border p-8">
+            <p className="font-semibold">ProgressBar</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Uploads, imports, long jobs. Indeterminate until you know.
+            </p>
+            <div className="mt-6 flex flex-col gap-4">
+              <ProgressBar label="Uploading" />
+              <ProgressBar value={0.35} label="Importing" />
+              <ProgressBar value={1} label="Done" />
+            </div>
+          </div>
+          <div className="rounded-2xl border p-8 sm:col-span-2">
+            <div className="flex flex-wrap items-baseline gap-3">
+              <p className="font-semibold">Outcome</p>
+              <p className="text-sm text-muted-foreground">
+                One-shot Lotties for saved, sent, published — and for failures.
+              </p>
+            </div>
+            <div className="mt-6 flex items-center gap-8">
+              <LottieState
+                key={`${outcome}-${outcomeKey}`}
+                name={outcome}
+                loop={false}
+                size={120}
+                label={outcome === 'success' ? 'Done' : 'Something went wrong'}
+              />
+              <div className="flex gap-2">
+                {(['success', 'error'] as const).map((o) => (
+                  <button
+                    key={o}
+                    type="button"
+                    onClick={() => {
+                      setOutcome(o);
+                      setOutcomeKey((k) => k + 1);
+                    }}
+                    className="rounded-full border px-4 py-1 text-sm capitalize"
+                  >
+                    Play {o}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>

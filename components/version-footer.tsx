@@ -9,9 +9,9 @@ import { useWindowSize } from 'usehooks-ts';
 import type { Document } from '@/lib/db/schema';
 import { getDocumentTimestampByIndex } from '@/lib/utils';
 
-import { LoaderIcon } from './icons';
 import { Button } from './ui/button';
 import { useArtifact } from '@/hooks/use-artifact';
+import { MarkSpinner } from '@/components/fifthseason/states';
 
 interface VersionFooterProps {
   handleVersionChange: (type: 'next' | 'prev' | 'toggle' | 'latest') => void;
@@ -88,8 +88,8 @@ export const VersionFooter = ({
         >
           <div>Restore this version</div>
           {isMutating && (
-            <div className="animate-spin">
-              <LoaderIcon />
+            <div className="flex">
+              <MarkSpinner size={16} />
             </div>
           )}
         </Button>

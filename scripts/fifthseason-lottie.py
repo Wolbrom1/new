@@ -264,7 +264,148 @@ for j, (off, col) in enumerate([(0, '#EE79BB'), (1 / 3, '#F89A66'), (2 / 3, '#B2
     layers.append(ring_layer(6 + j, f'ring {j}', col, op, sz, oc))
 speaking = comp('Fifth Season — Speaking', op, layers)
 
-for name, data in [('listening', listening), ('thinking', thinking), ('speaking', speaking)]:
+
+# ================================================================ loaders
+CORNERS = ['tl', 'tr', 'br', 'bl']  # clockwise from the green
+
+
+def offset_pos(key, op, push_fn):
+    """Position pushed out along the circle's own diagonal by push_fn(t) px."""
+    cx, cy = to_canvas(*CENTRES[key])
+    dx, dy = DIAG[key]
+    return sampled(lambda t: [cx + dx * push_fn(t) * .7071, cy + dy * push_fn(t) * .7071, 0], op)
+
+
+# ------------------------------------------------------------------ Flip
+# Each circle turns over like a card, clockwise, landing before the next goes.
+op = int(FPS * 2.4)
+
+
+def flip_x(t, start):
+    u = (t - start) % 1
+    if u > .34:
+        return 100
+    f = u / .34
+    return 4 + 96 * abs(math.cos(math.pi * ease(f)))
+
+
+layers = [shape_layer(i + 1, k, k, op,
+                      scale=sampled(lambda t, st=i / 6: [flip_x(t, st), 100, 100], op))
+          for i, k in enumerate(CORNERS)]
+layers.append(shape_layer(5, 'star', 'star', op))
+flip = comp('Fifth Season — Flip', op, layers)
+
+# ---------------------------------------------------------------- Tandem
+# The diagonals trade size: green and orange swell while violet and indigo
+# give way, then the other way round.
+op = int(FPS * 1.8)
+
+
+def tandem(t, ph):
+    c = .5 + .5 * math.cos(TAU * t + ph)  # 1 -> big, 0 -> small
+    return 80 + 26 * c, 55 + 45 * c
+
+
+layers = []
+for i, k in enumerate(CORNERS):
+    ph = 0 if k in ('tl', 'br') else math.pi
+    layers.append(shape_layer(i + 1, k, k, op,
+                              scale=sampled(lambda t, ph=ph: [tandem(t, ph)[0]] * 2 + [100], op),
+                              opac=sampled(lambda t, ph=ph: tandem(t, ph)[1], op)))
+layers.append(shape_layer(5, 'star', 'star', op,
+                          scale=sampled(lambda t: [93 + 7 * math.cos(TAU * 2 * t)] * 2 + [100], op)))
+tandem_c = comp('Fifth Season — Tandem', op, layers)
+
+# --------------------------------------------------------------- Compass
+# The star ticks a quarter-turn per beat with a slight overshoot, shrinking
+# at 45 degrees so its arms clear; the circles recoil on every tick. Four
+# ticks per loop so the star's gradient comes home.
+op = int(FPS * 3.6)
+
+
+def back_out(x, s=1.6):
+    x -= 1
+    return 1 + x * x * ((s + 1) * x + s)
+
+
+def compass_rot(t):
+    q = t * 4
+    k, f = int(q), q - int(q)
+    m = min(f / .55, 1)
+    return 90 * (k + back_out(m))
+
+
+def recoil(t):
+    f = (t * 4) % 1
+    return 7 * math.sin(math.pi * min(f / .2, 1)) if f < .2 else 0
+
+
+layers = [shape_layer(1, 'star', 'star', op,
+                      rot=sampled(compass_rot, op, step=1),
+                      scale=sampled(lambda t: [70 + 30 * abs(math.cos(2 * math.radians(compass_rot(t))))] * 2 + [100], op, step=1))]
+for i, k in enumerate(CORNERS):
+    layers.append(shape_layer(i + 2, k, k, op, pos=offset_pos(k, op, recoil)))
+compass = comp('Fifth Season — Compass', op, layers)
+
+# ======================================================== one-shot states
+# These play once and hold the last frame (set loop: false in the player).
+
+
+def spring(x, damp=6.5, freq=2.2):
+    """0 -> 1 with a single decaying overshoot."""
+    if x <= 0:
+        return 0
+    return 1 - math.exp(-damp * x) * math.cos(TAU * freq * x * .5)
+
+
+# --------------------------------------------------------------- Success
+# The four circles spring out from the centre into place, the star lands
+# last, and one ring goes out — done.
+op = int(FPS * 1.6)
+layers = []
+for i, k in enumerate(CORNERS):
+    cx, cy = to_canvas(*CENTRES[k])
+    mx, my = W / 2, H / 2
+    d0 = i * .05
+    def pos(t, cx=cx, cy=cy, d0=d0):
+        s = spring((t - d0) / .5)
+        return [mx + (cx - mx) * s, my + (cy - my) * s, 0]
+    def sc(t, d0=d0):
+        v = 100 * min(1, spring((t - d0) / .5) * 1.0) if t > d0 else 0
+        return [max(0, v)] * 2 + [100]
+    layers.append(shape_layer(i + 1, k, k, op, pos=sampled(pos, op, step=1), scale=sampled(sc, op, step=1)))
+layers.append(shape_layer(5, 'star', 'star', op,
+                          scale=sampled(lambda t: [max(0, 100 * spring((t - .32) / .4))] * 2 + [100], op, step=1)))
+layers.append(ring_layer(6, 'done ring', '#92D1A9', op,
+                         lambda t: 300 + 180 * ease(min(1, max(0, (t - .4) / .5))),
+                         lambda t: 0 if t < .4 else 80 * (1 - min(1, (t - .4) / .5)) ** 1.4))
+success = comp('Fifth Season — Success', op, layers)
+
+# ----------------------------------------------------------------- Error
+# A head-shake: the whole mark swings side to side and settles, the circles
+# dipping as it goes, with one coral ring as the beat. Ends at rest.
+op = int(FPS * 1.2)
+
+
+def shake(t):
+    return 40 * math.exp(-4.5 * t) * math.sin(TAU * 4 * t)
+
+
+rig = null_layer(1, op)
+rig['ks']['p'] = sampled(lambda t: [W / 2 + shake(t), H / 2, 0], op, step=1)
+layers = [rig]
+for i, k in enumerate(CORNERS):
+    layers.append(shape_layer(i + 2, k, k, op, parent=1,
+                              scale=sampled(lambda t: [100 - 10 * math.exp(-5 * t) * abs(math.sin(TAU * 2 * t))] * 2 + [100], op, step=1)))
+layers.append(shape_layer(6, 'star', 'star', op, parent=1))
+layers.append(ring_layer(7, 'beat', '#E48369', op,
+                         lambda t: 310 + 120 * ease(min(1, t / .6)),
+                         lambda t: 70 * (1 - min(1, t / .6)) ** 1.5))
+error = comp('Fifth Season — Error', op, layers)
+
+for name, data in [('listening', listening), ('thinking', thinking), ('speaking', speaking),
+                   ('flip', flip), ('tandem', tandem_c), ('compass', compass),
+                   ('success', success), ('error', error)]:
     with open(f'{OUT}/fifthseason-{name}.json', 'w') as fh:
         json.dump(data, fh, separators=(',', ':'))
     print(name, data['op'], 'frames', len(json.dumps(data, separators=(',', ':'))) // 1024, 'KB')

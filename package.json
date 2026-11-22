@@ -16,7 +16,9 @@
     "db:pull": "drizzle-kit pull",
     "db:check": "drizzle-kit check",
     "db:up": "drizzle-kit up",
-    "test": "export PLAYWRIGHT=True && pnpm exec playwright test"
+    "test": "export PLAYWRIGHT=True && pnpm exec playwright test",
+    "audit:surfaces": "node scripts/surface-audit.mjs",
+    "brand:lottie": "python3 -I scripts/fifthseason-lottie.py components/fifthseason/brand.tsx public/brand/lottie"
   },
   "dependencies": {
     "@ai-sdk/react": "^1.2.8",
