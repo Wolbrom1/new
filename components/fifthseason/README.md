@@ -74,9 +74,35 @@ living style guide. The middleware matcher (`/spinners/:path*`) puts them
 behind the app's login like every other page; delete the `app/spinners`
 folder and that matcher entry if they should not ship.
 
+## Browser support
+
+`pnpm test:browsers <url> <outdir>` runs the same flow in all three engines
+against a production build (see the script header for setup). Last run:
+
+| Engine | Browsers | Result |
+| --- | --- | --- |
+| Chromium | Chrome, Edge, Perplexity Comet, Arc, Brave, Opera, ChatGPT Atlas | All checks pass, including dictation |
+| WebKit 18.4 | Safari on macOS, and on iPhone (and every iOS browser, which must use WebKit) | All checks pass |
+| Gecko 135 | Firefox | All checks pass; mic hidden (no speech recognition in Firefox) |
+
+Checked in each: toast animation, first-visit opening, thinking indicator and
+its gradient text, spinner animation, stop button while streaming, mic shown
+only where speech recognition exists, route loading bar, and every loader,
+Lottie and opening on the style guide.
+
+Dictation was exercised with a scripted recogniser (headless engines have no
+speech service); the mic level, animation and transcript handling are real.
+Real speech recognition still needs one manual check in Chrome and Safari.
+
+"Failed to fetch RSC payload… falling back to browser navigation" may appear
+in the console when a page change cancels a background prefetch. That is
+Next.js, logged on `main` too; navigation still completes.
+
 ## Known
 
 - In test mode the "Creating document" row keeps spinning after the document
   finishes. The mock model repeats the tool call; confirm with a real model.
+- The template's mobile sidebar drawer logs a `DialogContent requires a
+  DialogTitle` accessibility warning on phones. Pre-existing; worth fixing.
 - `next start` on localhost needs `AUTH_TRUST_HOST=true` (Auth.js production
   guard). Not needed behind a real domain.

@@ -186,22 +186,26 @@ export function LottieState({
     ).matches;
 
     // lottie-web touches `document` at import time, so it loads on the client.
-    import('lottie-web').then(({ default: lottie }) => {
-      if (cancelled || !host.current) return;
-      anim = lottie.loadAnimation({
-        container: host.current,
-        renderer: 'svg',
-        loop: loop && !reduced,
-        autoplay: !reduced,
-        path: `/brand/lottie/fifthseason-${name}.json`,
-      });
-      if (reduced) {
-        anim.addEventListener('DOMLoaded', () =>
-          anim?.goToAndStop(anim.totalFrames - 1, true),
-        );
-      }
-      anim.addEventListener('complete', () => done.current?.());
-    });
+    import('lottie-web')
+      .then(({ default: lottie }) => {
+        if (cancelled || !host.current) return;
+        anim = lottie.loadAnimation({
+          container: host.current,
+          renderer: 'svg',
+          loop: loop && !reduced,
+          autoplay: !reduced,
+          path: `/brand/lottie/fifthseason-${name}.json`,
+        });
+        if (reduced) {
+          anim.addEventListener('DOMLoaded', () =>
+            anim?.goToAndStop(anim.totalFrames - 1, true),
+          );
+        }
+        anim.addEventListener('complete', () => done.current?.());
+      })
+      // A chunk that fails to load (offline, or the page left mid-load) must
+      // not surface as an error: the indicator just stays in its still state.
+      .catch(() => {});
 
     return () => {
       cancelled = true;

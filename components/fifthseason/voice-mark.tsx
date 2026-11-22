@@ -63,24 +63,28 @@ export function VoiceMark({
     ).matches;
 
     // lottie-web touches `document` at import time, so it loads on the client.
-    import('lottie-web').then(({ default: lottie }) => {
-      if (cancelled) return;
-      for (const s of STATES) {
-        const container = hosts.current[s];
-        if (!container) continue;
-        const anim = lottie.loadAnimation({
-          container,
-          renderer: 'svg',
-          loop: true,
-          autoplay: false,
-          path: `/brand/lottie/fifthseason-${s}.json`,
-        });
-        anims.current[s] = anim;
-        anim.addEventListener('DOMLoaded', () => {
-          if (s === stateRef.current && !reduced) anim.play();
-        });
-      }
-    });
+    import('lottie-web')
+      .then(({ default: lottie }) => {
+        if (cancelled) return;
+        for (const s of STATES) {
+          const container = hosts.current[s];
+          if (!container) continue;
+          const anim = lottie.loadAnimation({
+            container,
+            renderer: 'svg',
+            loop: true,
+            autoplay: false,
+            path: `/brand/lottie/fifthseason-${s}.json`,
+          });
+          anims.current[s] = anim;
+          anim.addEventListener('DOMLoaded', () => {
+            if (s === stateRef.current && !reduced) anim.play();
+          });
+        }
+      })
+      // A chunk that fails to load (offline, or the page left mid-load) must
+      // not surface as an error: the indicator just stays in its still state.
+      .catch(() => {});
 
     return () => {
       cancelled = true;
